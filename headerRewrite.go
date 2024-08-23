@@ -6,13 +6,15 @@
 // SPDX-License-Identifier: EPL-2.0
 //
 // Contributors:
-//   Red Hat, Inc. - initial API and implementation
 //
+//	Red Hat, Inc. - initial API and implementation
 package header_rewrite_traefik_plugin
 
 import (
 	"context"
+	"log"
 	"net/http"
+	"regexp"
 )
 
 type Config struct {
@@ -21,6 +23,8 @@ type Config struct {
 	Prefix             string `json:"prefix,omitempty"`
 	KeepOriginal       bool   `json:"keepOriginal,omitempty"`
 	KeepOriginalTarget bool   `json:"keepOriginalTarget,omitempty"`
+	Regex              string `json:"regex,omitempty"`
+	Replacement        string `json:"replacement,omitempty"`
 }
 
 func CreateConfig() *Config {
@@ -54,6 +58,16 @@ func rewriteHeaders(headers *http.Header, rule *Config) {
 			if len(rule.Prefix) > 0 {
 				headerValue = rule.Prefix + headerValue
 			}
+
+			if len(rule.Regex) > 0 {
+				regex, err := regexp.Compile(rule.Regex)
+				if err != nil {
+					log.Printf("error compiling regex %q: %s", rule.Regex, err.Error())
+				} else {
+					headerValue = regex.ReplaceAllString(headerValue, rule.Replacement)
+				}
+			}
+
 			headers.Add(rule.To, headerValue)
 		}
 	}
