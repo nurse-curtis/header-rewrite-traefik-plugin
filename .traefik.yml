@@ -2,7 +2,7 @@ displayName: Header Rewrite
 summary: Plugin that can rewrite http headers with given rules.
 iconPath: icon.svg
 type: middleware
-import: github.com/gritgmbh/header-rewrite-traefik-plugin
+import: github.com/nurse-curtis/header-rewrite-traefik-plugin
 testData:
   from: X-Forwarded-Access-Token
   to: Authorization
